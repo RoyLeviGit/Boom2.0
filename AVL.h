@@ -342,7 +342,7 @@ private:
      * @param i the index to find. i>=1
      * @return the data, nullptr if no such data exists
      */
-    const T* getRank(int i, Vertex<T> *vertex) { //TODO: const?
+    const T* getRank(int i, Vertex<T> *vertex) {
         if (vertex == nullptr)
             return nullptr;
         else if (calculateRank(vertex->left) >= i) // should i go left?

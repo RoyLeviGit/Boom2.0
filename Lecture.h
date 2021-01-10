@@ -9,13 +9,13 @@ class Lecture {
 public:
     int courseID;
     int lectureID;
-    int time; // only a reference and is not be deleted or initialised by Lecture
+    int time; /** only a reference and is not be deleted or initialised by Lecture */
 
-    Lecture() = default; // must exist for usage in AVL
+    Lecture() = default; /** must exist for usage in AVL */
     Lecture(int courseID, int lectureID, int time) : courseID(courseID), lectureID(lectureID), time(time) {}
 
-    Lecture(const Lecture& other) = default; // must exist for usage in AVL
-    Lecture& operator=(const Lecture& other) = default; // must exist for usage in AVL
+    Lecture(const Lecture& other) = default; /** must exist for usage in AVL */
+    Lecture& operator=(const Lecture& other) = default; /** must exist for usage in AVL */
     ~Lecture() = default;
 
     // Boolean operators
@@ -25,7 +25,7 @@ public:
                 return lectureID < lecture.lectureID;
             return courseID < lecture.courseID;
         }
-        return time > lecture.time; // bigger time means smaller in the AVL tree.
+        return time > lecture.time; /** bigger time means smaller in the AVL tree. */
     }
     bool operator==(const Lecture& lecture) const {
         return time == lecture.time

@@ -28,6 +28,7 @@ class HashTable {
         switch (manual) {
             case Expand: return size*GROWTH_FACTOR;
             case Shrink: return size/GROWTH_FACTOR;
+            default: return 0; /** Should not get here */
         }
     }
 
@@ -37,24 +38,16 @@ class HashTable {
         size = newSize(manual);
         for (int i = 0; i < oldSize; i++) {
             for (Node<Course>* courseNode = data[i].head; courseNode != nullptr; courseNode = courseNode->next) {
-                insert(courseNode->data, newData);
+                int hashedKey = hashMe(courseNode->data.courseID);
+                newData[hashedKey].insert(courseNode->data);
             }
         }
         delete [] data;
         data = newData;
     }
 
-    void insert(Course course, DLL<Course>* dataToUpdate) {
-        int hashedKey = hashMe(course.courseID);
-        dataToUpdate[hashedKey].insert(course);
-        counter++;
-
-        if (counter == size) {
-            resize(Expand);
-        }
-    }
-
     Node<Course>* findNode(int key) {
+        int hashedKey = hashMe(key);
         for (Node<Course>* courseNode = data[hashMe(key)].head; courseNode != nullptr; courseNode = courseNode->next) {
             if(courseNode->data.courseID == key) {
                 return courseNode;
@@ -64,16 +57,23 @@ class HashTable {
     }
 
 public:
+    explicit HashTable() : data(new DLL<Course>[INITIAL_CAPACITY]) {};
 
     ~HashTable() {
         delete [] data;
     }
 
-    void insert(Course course) {
-        insert(course, data);
+    void insert(const Course& course) {
+        int hashedKey = hashMe(course.courseID);
+        data[hashedKey].insert(course);
+        counter++;
+
+        if (counter == size) {
+            resize(Expand);
+        }
     }
 
-    void remove(Course course) {
+    void remove(const Course& course) {
         Node<Course>* courseNode = findNode(course.courseID);
         if (courseNode == nullptr) return;
 

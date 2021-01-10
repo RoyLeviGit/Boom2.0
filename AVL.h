@@ -242,7 +242,7 @@ private:
      * @param exist *bool to indicate if the data already exist in the tree
      * @return the root (should be ignored)
      */
-    Vertex<T>* insert(const T& data, Vertex<T> *vertex, bool* exists = nullptr, Vertex<T>* parent = nullptr, bool justLeft = true) {
+    Vertex<T>* insert(const T& data, Vertex<T> *vertex, bool* exists = nullptr, Vertex<T>* parent = nullptr) {
         if(vertex==nullptr){
             vertex = new Vertex<T>;
             vertex->data = data;
@@ -252,15 +252,13 @@ private:
             vertex->rank = 1;
             if (root == nullptr)
                 this->root = vertex;
-            if (justLeft)
-                this->pfh = vertex;
             if (exists != nullptr) *exists = false;
             return vertex;
         } else {
             if(data < vertex->data)
-                vertex->left = insert(data, vertex->left, exists, vertex, justLeft);
+                vertex->left = insert(data, vertex->left, exists, vertex);
             else if(data > vertex->data)
-                vertex->right = insert(data, vertex->right, exists, vertex, false);
+                vertex->right = insert(data, vertex->right, exists, vertex);
             else
             if (exists != nullptr) *exists = true;
         }
@@ -286,7 +284,7 @@ private:
      * @param exist *bool to indicate if the data was already exist in the tree
      * @return the root (should be ignored)
      */
-    Vertex<T>* remove(const T& data, Vertex<T> *vertex, bool* exists = nullptr, bool justLeft = true) {
+    Vertex<T>* remove(const T& data, Vertex<T> *vertex, bool* exists = nullptr) {
         if (vertex == nullptr) {
             if (exists != nullptr) *exists = false;
             return nullptr;
@@ -298,27 +296,25 @@ private:
             }
             if(vertex==this->root)
                 this->root = nullptr;
-            if (justLeft)
-                this->pfh = vertex->parent;
             delete vertex;
             if (exists != nullptr) *exists = true;
             return nullptr;
         }
 
         if(vertex->data < data){
-            vertex->right = remove(data, vertex->right, exists, false);
+            vertex->right = remove(data, vertex->right, exists);
         }
         else if(vertex->data > data){
-            vertex->left = remove(data, vertex->left, exists, justLeft);
+            vertex->left = remove(data, vertex->left, exists);
         } else {
             if (vertex->left != nullptr) {
                 Vertex<T>* preVertex = predecessor(vertex->left);
                 vertex = switchVertices(vertex, preVertex);
-                vertex->left = remove(data, vertex->left, exists, justLeft);
+                vertex->left = remove(data, vertex->left, exists);
             } else {
                 Vertex<T>* postVertex = postdecessor(vertex->right); // vertex->right != nullptr
                 vertex = switchVertices(vertex, postVertex);
-                vertex->right = remove(data, vertex->right, exists, false);
+                vertex->right = remove(data, vertex->right, exists);
             }
         }
         vertex->height = calculateHeight(vertex);
@@ -349,7 +345,7 @@ private:
             return getRank(i, vertex->left);
         else if (calculateRank(vertex->left)+1 < i) // should i go right?
             return getRank(i-calculateRank(vertex->left)-1, vertex->right);
-        return vertex->data;
+        return &vertex->data;
     }
 
 public:
@@ -360,12 +356,12 @@ public:
 
     // insert shell
     Vertex<T>* insert(const T& data, bool* exists = nullptr) {
-        return insert(data, root, exists, nullptr, true);
+        return insert(data, root, exists, nullptr);
     }
 
     // remove shell
     Vertex<T>* remove(const T& data, bool* exists = nullptr) {
-        return remove(data, root, exists, true);
+        return remove(data, root, exists);
     }
 
     // remove shell

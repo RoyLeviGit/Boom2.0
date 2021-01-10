@@ -6,17 +6,17 @@
 #define BOOM2_0_COURSE_H
 
 #define GROWTH_FACTOR 2
-#define INITIAL_CAPACITY 4
+#define INITIAL_CAPACITY 2
 
 #include "Lecture.h"
 
 class Course {
-    int size = 0;
+    int size = INITIAL_CAPACITY;
 
     void expand() {
         auto newData = new Lecture*[size*GROWTH_FACTOR];
-        for (int i = 0; i < size; i++) {
-            newData[i] = lectures[i];
+        for (int i = 0; i < size*GROWTH_FACTOR; i++) {
+            newData[i] = (i < size) ? lectures[i] : nullptr;
         }
         size = size*GROWTH_FACTOR;
 
@@ -29,8 +29,11 @@ public:
     Lecture** lectures = nullptr; /** DynamicArray of pointers to lecture vertices */
     int numOfLectures = 0;
 
-    explicit Course(int courseID)
-            : courseID(courseID), lectures(new Lecture*[INITIAL_CAPACITY]) {};
+    explicit Course(int courseID = 0) : courseID(courseID), lectures(new Lecture*[INITIAL_CAPACITY]) {
+        for (int i = 0; i < INITIAL_CAPACITY; i++) {
+            lectures[i] = nullptr;
+        }
+    };
 
     ~Course() {
         delete [] lectures; //TODO: check if entered when hashTable gets deleted

@@ -31,7 +31,7 @@ StatusType Boom::RemoveCourse(int courseID) {
 
     try {
         for (int i = 0; i < course->numOfLectures; i++) {
-            lecturesTree.remove(*course->findLecture(i));
+            lecturesTree.remove(**course->findLecture(i));
         }
         courseTable.remove(*course);
     } catch (std::bad_alloc &e) {
@@ -70,14 +70,14 @@ StatusType Boom::WatchClass(int courseID, int classID, int time) {
     }
 
     try {
-        Lecture* lecture = course->findLecture(classID);
+        Lecture** lecture = course->findLecture(classID);
         int currentTime = 0;
-        if(lecture != nullptr) {
-            currentTime = lecture->time;
-            lecturesTree.remove(*lecture);
+        if(*lecture != nullptr) {
+            currentTime = (*lecture)->time;
+            lecturesTree.remove(Lecture(courseID, classID, currentTime));
         }
-
-        lecturesTree.insert(Lecture(courseID, classID, currentTime + time));
+        *lecture = new Lecture(courseID, classID, currentTime + time);
+        lecturesTree.insert(**lecture);
     } catch (std::bad_alloc &e) {
         return ALLOCATION_ERROR;
     }
@@ -96,8 +96,8 @@ StatusType Boom::TimeViewed(int courseID, int classID, int *timeViewed) {
         return INVALID_INPUT;
     }
 
-    Lecture* lecture = course->findLecture(classID);
-    *timeViewed = (lecture == nullptr) ? 0 : lecture->time;
+    Lecture** lecture = course->findLecture(classID);
+    *timeViewed = (*lecture == nullptr) ? 0 : (*lecture)->time;
     return SUCCESS;
 }
 

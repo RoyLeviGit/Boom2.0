@@ -21,40 +21,55 @@ public:
         }
     }
 
-    void insert(const T& data) {
+    /** Does not copy data */
+    void insert(Node<T> *newNode) {
         if (head == nullptr) {
-            head = new Node<T>;
-            head->data = data;
+            head = newNode;
             tail = head;
             return;
         }
-        auto newNode = new Node<T>;
-        newNode->data = data;
         newNode->next = head;
         head->prev = newNode;
         head = newNode;
+        head->prev = nullptr;
     }
 
-    void remove(Node<T>* node) {
+    /** Copies data */
+    void insert(const T& data) {
+        auto newNode = new Node<T>;
+        newNode->data = data;
+        insert(newNode);
+    }
+
+    /** Does not delete node */
+    void pop(Node<T>* node) {
         if (node == nullptr) {
             return;
         }
 
         if (head == tail) {
-            delete head;
             head = tail = nullptr;
+            node->next = node->prev = nullptr;
             return;
         }
         else if (node == head) {
             head = node->next;
+            head->prev = nullptr;
         }
         else if (node == tail) {
             tail = node->prev;
+            tail->next = nullptr;
         }
         else {
             node->next->prev = node->prev;
             node->prev->next = node->next;
         }
+        node->next = node->prev = nullptr;
+    }
+
+    /** Deletes node */
+    void remove(Node<T>* node) {
+        pop(node);
         delete node;
     }
 };

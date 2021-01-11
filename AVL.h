@@ -25,6 +25,9 @@ private:
 
     // returns Height of Vertex
     int calculateHeight(Vertex<T> *vertex){
+        if (vertex == nullptr) {
+            return 0;
+        }
         if(vertex->left && vertex->right) {
             if (vertex->left->height < vertex->right->height)
                 return vertex->right->height + 1;
@@ -39,6 +42,9 @@ private:
 
     // returns Rank of Vertex
     int calculateRank(Vertex<T> *vertex) {
+        if (vertex == nullptr) {
+            return 0;
+        }
         if(vertex->left && vertex->right) {
             return vertex->right->rank + vertex->left->rank + 1;
         }
@@ -355,13 +361,13 @@ public:
     }
 
     // insert shell
-    Vertex<T>* insert(const T& data, bool* exists = nullptr) {
-        return insert(data, root, exists, nullptr);
+    void insert(const T& data, bool* exists = nullptr) {
+        insert(data, root, exists, nullptr);
     }
 
     // remove shell
-    Vertex<T>* remove(const T& data, bool* exists = nullptr) {
-        return remove(data, root, exists);
+    void remove(const T& data, bool* exists = nullptr) {
+        remove(data, root, exists);
     }
 
     // remove shell

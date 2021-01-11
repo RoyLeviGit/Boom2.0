@@ -17,14 +17,14 @@ class HashTable {
     int size = MIN_CAPACITY;
     int counter = 0;
 
-    enum ResizeManual { Expand, Shrink };
+    typedef enum ResizeManual { Expand, Shrink } ResizeManual;
 
     int hashMe(int key) const {
         double A = (sqrt(5)-1)/2;
         return floor(size * (key*A - floor(key*A)));
     }
 
-    int newSize(enum ResizeManual manual) const {
+    int newSize(ResizeManual manual) const {
         switch (manual) {
             case Expand: return size*GROWTH_FACTOR;
             case Shrink: return size/GROWTH_FACTOR;
@@ -32,14 +32,15 @@ class HashTable {
         }
     }
 
-    void resize(enum ResizeManual manual) {
+    void resize(ResizeManual manual) {
         auto newData = new DLL<Course>[newSize(manual)];
         int oldSize = size;
         size = newSize(manual);
         for (int i = 0; i < oldSize; i++) {
-            for (Node<Course>* courseNode = data[i].head; courseNode != nullptr; courseNode = courseNode->next) {
-                int hashedKey = hashMe(courseNode->data.courseID);
-                newData[hashedKey].insert(courseNode->data);
+            for (auto node = data[i].head; node != nullptr; node = data[i].head) {
+                int hashedKey = hashMe(data[i].head->data.courseID);
+                data[i].pop(node); /** Pops head node from DLL. must be done before insertion */
+                newData[hashedKey].insert(node); /** Copies Node and doesn't call course copy constructor */
             }
         }
         delete [] data;
@@ -48,7 +49,7 @@ class HashTable {
 
     Node<Course>* findNode(int key) {
         int hashedKey = hashMe(key);
-        for (Node<Course>* courseNode = data[hashMe(key)].head; courseNode != nullptr; courseNode = courseNode->next) {
+        for (Node<Course>* courseNode = data[hashedKey].head; courseNode != nullptr; courseNode = courseNode->next) {
             if(courseNode->data.courseID == key) {
                 return courseNode;
             }
@@ -79,6 +80,7 @@ public:
 
         data[hashMe(course.courseID)].remove(courseNode);
         counter--;
+
         if(counter == size/2) {
             resize(Shrink);
         }

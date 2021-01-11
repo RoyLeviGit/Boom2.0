@@ -31,7 +31,10 @@ StatusType Boom::RemoveCourse(int courseID) {
 
     try {
         for (int i = 0; i < course->numOfLectures; i++) {
-            lecturesTree.remove(**course->findLecture(i));
+            Lecture** lecture = course->findLecture(i);
+            if (*lecture != nullptr) {
+                lecturesTree.remove(**lecture);
+            }
         }
         courseTable.remove(*course);
     } catch (std::bad_alloc &e) {

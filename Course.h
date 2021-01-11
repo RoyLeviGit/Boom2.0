@@ -36,10 +36,15 @@ public:
     };
 
     ~Course() {
+        for (int i = 0; i < numOfLectures; i++) {
+            if (lectures[i] != nullptr) {
+                delete lectures[i];
+            }
+        }
         delete [] lectures; //TODO: check if entered when hashTable gets deleted
     }
 
-    Course(const Course& other) : courseID(other.courseID), numOfLectures(other.numOfLectures), size(other.size) {
+    Course(const Course& other) : size(other.size), courseID(other.courseID), numOfLectures(other.numOfLectures) {
         lectures = new Lecture*[other.size];
         for (int i = 0; i < size; i++) {
             lectures[i] = other.lectures[i];

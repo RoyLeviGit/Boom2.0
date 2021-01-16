@@ -19,11 +19,20 @@ class HashTable {
 
     typedef enum ResizeManual { Expand, Shrink } ResizeManual;
 
+    /**
+     * Hashing function for the hash table, using 0<a<1 method, O(1)
+     * @param key the key index of the object to hash
+     * @return index for key in the range: 0-(size-1)
+     */
     int hashMe(int key) const {
         double A = (sqrt(5)-1)/2;
         return floor(size * (key*A - floor(key*A)));
     }
-
+    /**
+     * computes the new size fot the resize function of hash table dynamic array
+     * @param manual, enum that represents the type of resizing
+     *
+     */
     int newSize(ResizeManual manual) const {
         switch (manual) {
             case Expand: return size*GROWTH_FACTOR;
@@ -31,7 +40,10 @@ class HashTable {
             default: return 0; /** Should not get here */
         }
     }
-
+    /**
+     * Resize the hash table dynamic array
+     * @param manual, enum that represents the type of resizing
+     */
     void resize(ResizeManual manual) {
         auto newData = new DLL<Course>[newSize(manual)];
         int oldSize = size;
@@ -46,7 +58,11 @@ class HashTable {
         delete [] data;
         data = newData;
     }
-
+    /**
+     *Find Node<course> using a given key
+     * @param key of certain course
+     * @return pointer for the Node<course> if found a matching one, else nullptr
+     */
     Node<Course>* findNode(int key) {
         int hashedKey = hashMe(key);
         for (Node<Course>* courseNode = data[hashedKey].head; courseNode != nullptr; courseNode = courseNode->next) {
@@ -63,7 +79,10 @@ public:
     ~HashTable() {
         delete [] data;
     }
-
+    /**
+     *Insert the given course from the hash table
+     * @param refrence of certain course
+     */
     void insert(const Course& course) {
         int hashedKey = hashMe(course.courseID);
         data[hashedKey].insert(course);
@@ -73,7 +92,10 @@ public:
             resize(Expand);
         }
     }
-
+    /**
+     *Remove the given course from the hash table
+     * @param refrence of certain course
+     */
     void remove(const Course& course) {
         Node<Course>* courseNode = findNode(course.courseID);
         if (courseNode == nullptr) return;
@@ -85,7 +107,11 @@ public:
             resize(Shrink);
         }
     }
-
+    /**
+     *Find the given course from the hash table
+     * @param key of certain course
+     * @return pointer for the course, else nullptr
+     */
     Course* find(int key) {
         Node<Course>* courseNode = findNode(key);
         return (courseNode != nullptr)? &courseNode->data : nullptr;
